@@ -120,6 +120,9 @@ class CameraFrame:
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
             filename = f"captured_images/image_{timestamp}.jpg"
             
+            # crop_frame = crop_main_frame(frame_rgb)   
+            # convert_to_64x384(crop_frame)
+
             # Convert RGB back to BGR for saving
             frame_bgr = cv2.cvtColor(frame_rgb, cv2.COLOR_RGB2BGR)
             cv2.imwrite(filename, frame_bgr)
@@ -127,6 +130,12 @@ class CameraFrame:
         except queue.Empty:
             return None
 
+    def crop_main_frame(self):
+        # crop the main stacked sheet image 
+        pass  
+    
+    def convert_to_64x384 (self) : 
+        pass  
             
     def set_count_callback(self, callback):
         self.count_callback = callback
