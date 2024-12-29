@@ -1,8 +1,16 @@
 from tkinter import ttk
 import tkinter as tk
+import sys
+import os
+
+# Add the src directory to the Python path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
+
+from process.pipeline import process_image_pipeline
+from .process_animation import ProcessAnimation
 
 class ButtonFrame:
-    def __init__(self, parent, root, camera_frame):
+    def __init__(self, parent, root, camera_frame, process_animation):
         self.frame = ttk.Frame(parent)
         self.frame.pack(pady=30)
         
@@ -50,10 +58,24 @@ class ButtonFrame:
         for button in self.buttons.values():
             button.pack(side='left', padx=20)
 
+        self.parent = parent
+        self.process_animation = ProcessAnimation(parent)
+
     def counting(self):
-        # Trigger image capture when Count button is pressed
-        self.camera_frame.capture_image()
-    
+        # Start animation
+        self.process_animation.start()
+        
+        try:
+            # Capture image and process
+            image_path = self.camera_frame.capture_image()
+            if image_path:
+                result = process_image_pipeline(image_path)
+                stripe_count = result['stripe_count']
+                return stripe_count
+        finally:
+            # Stop animation when done
+            self.process_animation.stop()
+
     def process_captured_image(self, image_path):
         # This method will be called after image capture
         print(f"Processing captured image: {image_path}")

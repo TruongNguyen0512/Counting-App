@@ -6,6 +6,7 @@ from .components.buttons import ButtonFrame
 from .components.title import TitleLabel
 from .utils.config import setup_display
 from .components.brightness import BrightnessControl
+from .components.process_animation import ProcessAnimation
 
 
 class DesktopApp:
@@ -21,10 +22,14 @@ class DesktopApp:
         self.main_frame = ttk.Frame(self.root)
         self.main_frame.pack(expand=True, fill='both')
 
+        # Initialize process animation first
+        self.process_animation = ProcessAnimation(self.main_frame)
+
         # Add components
         self.title = TitleLabel(self.main_frame)
         self.camera = CameraFrame(self.main_frame)
-        self.buttons = ButtonFrame(self.main_frame, self.root,self.camera)          
+        # Pass process_animation to ButtonFrame
+        self.buttons = ButtonFrame(self.main_frame, self.root, self.camera, self.process_animation)          
         self.brightness = BrightnessControl(self.main_frame)
 
         # Bind keys

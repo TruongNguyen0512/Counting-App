@@ -54,7 +54,7 @@ class BrightnessControl:
             command=self.on_brightness_change
         )
         self.scale.pack(side='top', pady=(0,5))  # Add padding below scale
-        self.scale.set(50)  # Set initial value
+        self.scale.set(10)  # Set initial value
     
         # Create and pack value label AFTER scale
         self.value_label = ttk.Label(

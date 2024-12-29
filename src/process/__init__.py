@@ -4,6 +4,7 @@ from .utils import load_image, save_image
 from .preprocess import preprocess_image, convert_to_grayscale
 from .predictor import ImagePredictor
 from .skeleton_converter import SkeletonConverter
+from .counting import StripeCounter 
 
 __all__ = [
     'slice_image',
@@ -13,6 +14,7 @@ __all__ = [
     'preprocess_image',
     'convert_to_grayscale',
     'ImagePredictor',
-    'SkeletonConverter'
+    'SkeletonConverter' , 
+    'StripeCounter' 
 ]
 
