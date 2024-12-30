@@ -29,7 +29,12 @@ class DesktopApp:
         self.title = TitleLabel(self.main_frame)
         self.camera = CameraFrame(self.main_frame)
         # Pass process_animation to ButtonFrame
-        self.buttons = ButtonFrame(self.main_frame, self.root, self.camera, self.process_animation)          
+        self.buttons = ButtonFrame(
+            self.main_frame, 
+            self.root, 
+            self.camera, 
+            self.process_animation
+        )
         self.brightness = BrightnessControl(self.main_frame)
 
         # Bind keys
