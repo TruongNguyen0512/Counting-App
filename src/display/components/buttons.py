@@ -1,25 +1,20 @@
-from tkinter import ttk
+from tkinter import ttk, messagebox
 import tkinter as tk
-import sys
-import os
-import threading
-import time
-
-# Add the src directory to the Python path
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
-
 from process.pipeline import process_image_pipeline
-from .process_animation import ProcessAnimation
+import time
+import threading
 
 class ButtonFrame:
-    def __init__(self, parent, root, camera_frame, process_animation):
+    def __init__(self, parent, root, camera_frame,process_animation):
         self.frame = ttk.Frame(parent)
         self.frame.pack(pady=30)
-        
-        # Store references
+        self.process_animation = process_animation
+        # Store camera frame reference
         self.camera_frame = camera_frame
-        self.process_animation = process_animation  # Use the passed animation instance
         
+        # Add total count variable
+        self.total_stripe_count = 0
+
         # Set up the counting callback
         self.camera_frame.set_count_callback(self.process_captured_image)
 
@@ -56,73 +51,67 @@ class ButtonFrame:
                 style='Big.TButton'
             )
         }
-        self.predict_output = 0  
 
         # Pack buttons with more spacing
         for button in self.buttons.values():
             button.pack(side='left', padx=20)
 
-    def counting(self):
-        def process():
-            try:
-                # Start animation in main thread
-                self.frame.after(1, lambda: [
-                    print("Starting animation..."),
-                    self.process_animation.start()
-                ])
-                 
-                # Process image in background while animation is running
-                print("Capturing image...")
-                image_path = self.camera_frame.capture_image()
-                if image_path:
-                    print("Processing image...")
-                    result = process_image_pipeline(image_path)
-                    stripe_count = result['stripe_count']
-                    print(f"Found {stripe_count} stripes")
-                    
-                    # Stop animation only after processing is complete
-                    self.frame.after(1, lambda: [
-                        print("Processing complete, stopping animation..."),
-                        self.process_animation.stop()
-                    ])
-                    
-                    # Re-enable button after processing
-                    self.frame.after(100, lambda: 
-                        self.buttons['count'].configure(state='normal')
-                    )
-            except Exception as e:
-                print(f"Error during counting: {e}")
-                # Stop animation and re-enable button on error
-                self.frame.after(1, lambda: [
-                    self.process_animation.stop(),
-                    self.buttons['count'].configure(state='normal')
-                ])
+    def _process_image(self, is_continue=False):
+        """Common method for image processing with threading"""
+        processing_done = threading.Event()
+        result = {'error': None, 'stripe_count': None}
 
-        # Disable count button
-        self.buttons['count'].configure(state='disabled')
+        def process_thread():
+            try:
+                image_path = self.camera_frame.capture_image()
+                process_result = process_image_pipeline(image_path)
+                result['stripe_count'] = process_result['stripe_count']
+            except Exception as e:
+                result['error'] = str(e)
+            finally:
+                processing_done.set()
+
+        def animation_thread():
+            try:
+                self.process_animation.start()
+                while not processing_done.is_set():
+                    processing_done.wait(timeout=0.1)
+            finally:
+                self.process_animation.stop()
+                self.frame.after(0, lambda: self.show_result(result, is_continue))
+
+        process_t = threading.Thread(target=process_thread, daemon=True)
+        anim_t = threading.Thread(target=animation_thread)
         
-        # Start processing in separate thread
-        thread = threading.Thread(target=process)
-        thread.daemon = True
-        thread.start()
+        process_t.start()
+        anim_t.start()
+
+    def counting(self):
+        self._process_image(is_continue=False)
+
+    def continue_action(self):
+        self._process_image(is_continue=True)
+
+    def show_result(self, result, is_continue=False):
+        if result['error']:
+            messagebox.showerror("Error", f"Processing failed: {result['error']}")
+            print(f"Processing failed: {result['error']}")
+        else:
+            current_count = result['stripe_count']
+            if is_continue:
+                self.total_stripe_count += current_count
+                messagebox.showinfo("Results", 
+                    f"Number of new stripes: {current_count}\n"
+                    f"Total stripes counted: {self.total_stripe_count}")
+            else:
+                self.total_stripe_count = current_count
+                messagebox.showinfo("Results", 
+                    f"Number of stripes detected: {current_count}")
 
     def process_captured_image(self, image_path):
-        # This method will be called after image capture
-        print(f"Processing captured image: {image_path}")
-        # Add your counting logic here
-        
-    def continue_action(self):
-        # using the pipeline to process the image
-        image_path = self.camera_frame.capture_image()
-                if image_path:
-                    print("Processing image...")
-                    result = process_image_pipeline(image_path)
-                    stripe_count = result['stripe_count']
-                    print(f"Found {stripe_count} stripes")
-                    self.predict_output = stripe_count + self.predict_output
-                    print(f"Total stripes: {self.predict_output}")
-        return self.predict_output
-
+        # This method can now be simplified since processing is done in counting
+        print(f"Image captured at: {image_path}")
         
     def reset_action(self):
-        pass
+        self.total_stripe_count = 0
+        messagebox.showinfo("Reset", "Counter has been reset to 0")
