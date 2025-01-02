@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import tkinter as tk
 from display.app import DesktopApp
 from display.utils.config import setup_display
