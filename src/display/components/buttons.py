@@ -10,7 +10,7 @@ class ButtonFrame:
     def __init__(self, parent, root, camera_frame, process_animation):
         # Create main frame
         self.frame = ttk.Frame(parent)
-        self.frame.pack(side='bottom', pady=(0, 50))  # Add bottom padding
+        self.frame.pack(side='bottom', pady=(0, 50),padx=(150,0))  # Add bottom padding
         
         # Create center frame for buttons
         self.button_frame = ttk.Frame(self.frame)

@@ -80,7 +80,7 @@ class AppTheme:
         style.configure('Brightness.TLabel',
                        background=cls.LIGHT_GRAY,
                        foreground=cls.BLACK,
-                       font=('Helvetica', 16, 'bold'),
+                       font=('Helvetica', 25, 'bold'),
                        padding=(5, 5))
         
         style.configure('Brightness.Vertical.TScale',

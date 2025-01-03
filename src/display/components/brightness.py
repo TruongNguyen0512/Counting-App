@@ -17,10 +17,30 @@ class BrightnessControl:
         except KeyError:
             raise PermissionError("PWM group not found. Please run setup_pwm.py first")
 
+        # Create outer container for label and frame
+        self.container = ttk.Frame(parent)
+        self.container.pack(side='right', fill='y', padx=(0, 70), pady=30)
+
+        # Create label above the frame
+        self.title_label = ttk.Label(
+            self.container,
+            text="Brightness",
+            style='Brightness.TLabel'
+        )
+        self.title_label.pack(side='top', pady=(0, 10))
+
         # Create frame with explicit styling
-        self.frame = ttk.Frame(parent, style='Brightness.TFrame')
-        self.frame.pack(side='right', fill='y', padx=30, pady=30)  # Removed before parameter
-        
+        self.frame = ttk.Frame(self.container, style='Brightness.TFrame')
+        self.frame.pack(side='top', fill='y')
+
+        # Create value display label
+        self.value_label = ttk.Label(
+            self.frame,
+            text="50%",
+            style='Brightness.TLabel'
+        )
+        self.value_label.pack(side='top', pady=(10, 5))
+
         # Update PWM memory addresses to match working configuration
         self.PWM_CTRL_ADDR = 0xC40000D0
         self.PWM_CLOCK_ADDR = 0xC4080108
@@ -36,26 +56,18 @@ class BrightnessControl:
         self._init_pwm()
 
     def _create_widgets(self):
-        # Create and pack label with explicit styling
-        self.label = ttk.Label(
-            self.frame,
-            text="Brightness",
-            style='Brightness.TLabel'
-        )
-        self.label.pack(side='top', pady=(10, 10))
-        
         # Create scale with explicit styling and border
         self.scale = ttk.Scale(
             self.frame,
             from_=100,
             to=0,
             orient='vertical',
-            length=400,
+            length=700,
             style='Brightness.Vertical.TScale'
         )
         self.scale.configure(command=self.update_brightness)
         self.scale.set(50)
-        self.scale.pack(side='top', pady=10, ipadx=10, ipady=0)
+        self.scale.pack(side='top', pady=10, ipadx=10, ipady=10)
 
     def _init_pwm(self):
         """Initialize PWM with the same sequence as test.sh"""
@@ -98,5 +110,8 @@ class BrightnessControl:
             # Convert percentage to duty cycle value (0-10000)
             duty = int((brightness / 100.0) * 0x2710)  # 0x2710 = 10000
             self.write_pwm_value(self.PWM_DUTY_ADDR, duty)
+            
+            # Update value display label
+            self.value_label.config(text=f"{brightness}%")
         except Exception as e:
             print(f"Error in brightness change: {e}")

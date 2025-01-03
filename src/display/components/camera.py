@@ -11,7 +11,7 @@ import time
 class CameraFrame:
     def __init__(self, parent):
         self.frame = ttk.Frame(parent)
-        self.frame.pack(pady=30)
+        self.frame.pack(pady=30,padx=(150,0))
         
         # Initialize camera with optimized settings
         self.cap = cv2.VideoCapture(0)

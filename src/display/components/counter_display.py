@@ -5,7 +5,7 @@ class CounterDisplay:
     def __init__(self, parent):
         # Create a frame to hold the label
         self.frame = ttk.Frame(parent)
-        self.frame.pack(side='top', fill='x', pady=(20, 40))  # More top padding
+        self.frame.pack(side='top', fill='x', pady=(20, 40),padx=(150,0))  # More top padding
         
         self.label = ttk.Label(
             self.frame,
