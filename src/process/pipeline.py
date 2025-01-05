@@ -5,11 +5,18 @@ from .image_slicer import slice_image
 from .image_combiner import combine_predictions
 from .utils import load_image, save_image
 from .preprocess import preprocess_image, convert_to_grayscale
+import os
 
-def process_image_pipeline(image_path, model_path='./best_model.keras'):
+def process_image_pipeline(image_path, model_path='./best_model_0.2.keras'):
     """
     Complete pipeline: load -> preprocess -> slice -> predict -> combine -> skeletonize -> count
     """
+    if not isinstance(image_path, str):
+        raise ValueError(f"Expected string path, got {type(image_path)}")
+    
+    if not os.path.exists(image_path):
+        raise FileNotFoundError(f"Image file not found: {image_path}")
+        
     # Load image
     image = load_image(image_path)
     

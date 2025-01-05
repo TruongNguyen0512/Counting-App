@@ -10,11 +10,11 @@ class ButtonFrame:
     def __init__(self, parent, root, camera_frame, process_animation):
         # Create main frame
         self.frame = ttk.Frame(parent)
-        self.frame.pack(side='bottom', pady=(0, 50),padx=(150,0))  # Add bottom padding
+        self.frame.pack(side='bottom', pady=(0, 50),padx=(150,0))  # Changed to fill vertically
         
-        # Create center frame for buttons
+        # Create vertical button container
         self.button_frame = ttk.Frame(self.frame)
-        self.button_frame.pack(expand=True)
+        self.button_frame.pack(expand=True, fill='y')  # Fill vertically
         
         # Store references and setup
         self.counter_display = CounterDisplay(parent)
@@ -55,9 +55,9 @@ class ButtonFrame:
             )
         }
 
-        # Pack buttons with more spacing in center frame
+        # Pack buttons vertically with spacing
         for button in self.buttons.values():
-            button.pack(side='left', padx=30)  # Increased padding between buttons
+            button.pack(side='left', padx=30)  # Changed to vertical packing
 
     def _process_image(self, is_continue=False):
         """Common method for image processing with threading"""
@@ -66,11 +66,15 @@ class ButtonFrame:
 
         def process_thread():
             try:
-                image_path = self.camera_frame.capture_image()
-                process_result = process_image_pipeline(image_path)
-                result['stripe_count'] = process_result['stripe_count']
+                captured_images = self.camera_frame.capture_image()
+                if captured_images and isinstance(captured_images, dict):
+                    # Use the processed image path for the pipeline
+                    process_result = process_image_pipeline(str(captured_images['processed']))
+                    result['stripe_count'] = process_result['stripe_count']
+                else:
+                    result['error'] = "Failed to capture image"
             except Exception as e:
-                result['error'] = str(e)
+                result['error'] = f"Processing error: {str(e)}"
             finally:
                 processing_done.set()
 

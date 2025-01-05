@@ -45,6 +45,13 @@ class DesktopApp:
             self.process_animation
         )
 
+        # Print frame size after all components are initialized
+        self.main_frame.update()  # Ensure geometry is updated
+        width = self.main_frame.winfo_width()
+        height = self.main_frame.winfo_height()
+        print(f"Main frame size: {width}x{height}")
+        print(f"Main frame geometry: {self.main_frame.winfo_geometry()}")
+
         # Bind keys
         self.setup_key_bindings()
         
