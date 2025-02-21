@@ -1,19 +1,13 @@
 # Sheet Counter Project
 
-This project uses an Orange Pi with a camera, an AI model, and a display to count stacked sheets.
+## Objective
 
-## Folder Structure
-- **src/**: All source code files
-- **model/**: Pre-trained AI model (TensorFlow Lite format)
-- **assets/**: Images, fonts, and other assets
-- **logs/**: Log files generated during runtime
+The objective of the Sheet Counter project is to develop a system capable of accurately counting stacked sheets of paper using an Orange Pi, a camera, an AI model, and a display. The system aims to provide a reliable and efficient solution for tasks that require precise sheet counting, such as inventory management, manufacturing processes, and quality control.
 
-## Quick Start
-1. Clone the repository.
-2. Run `setup.sh` to install dependencies.
-3. Run `python3 src/main.py` to start the program.
+The key components of the project include:
+- **Orange Pi**: A single-board computer that serves as the main processing unit.
+- **Camera**: Captures images of the stacked sheets.
+- **AI Model**: A pre-trained model in TensorFlow Lite format that processes the images and counts the sheets.
+- **Display**: Shows the count results and provides a user interface.
 
-## Dependencies
-Install the required Python packages:
-```bash
-pip install -r requirements.txt
+By integrating these components, the project seeks to automate the counting process, reduce human error, and improve overall efficiency in various applications.
